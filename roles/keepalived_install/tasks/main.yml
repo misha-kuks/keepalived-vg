@@ -1,0 +1,26 @@
+---
+# tasks file for keepalived_install
+- name: Preconfig
+  include_tasks: initial.yml
+
+- name: Install package
+  apt: 
+    name: keepalived
+    state: present
+- name: Copy keepalived.conf
+  copy:
+    src: keepalived.conf
+    dest: /etc/keepalived/keepalived.conf
+    owner: root
+    group: root
+    mode: '0644'
+- name: Configure web1
+  shell: sed -i 's/CHANGE_STATE/MASTER/g' /etc/apt/sources.list
+  when: ansible_facts['hostname'] == "web1"
+  notify: restart keepalived
+- name: Configure web2
+  shell: sed -i 's/CHANGE_STATE/BACKUP/g' /etc/apt/sources.list
+  when: ansible_facts['hostname'] == "web2"
+  notify: restart keepalived
+
+

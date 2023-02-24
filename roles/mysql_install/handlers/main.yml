@@ -1,0 +1,7 @@
+---
+# handlers file for mysql_install
+- name: restart mariadb
+  become: true
+  service: 
+    name: mariadb
+    state: restarted

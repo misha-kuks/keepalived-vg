@@ -1,0 +1,13 @@
+---
+- name: Upgrade system
+  become: true
+  # hosts: db
+  block:
+    - name: Change repository
+      shell: sed -i 's/archive.ubuntu.com/mirror.yandex.ru/g' /etc/apt/sources.list
+    - name: Update 
+      apt:
+        update_cache: true
+        upgrade: true
+        
+

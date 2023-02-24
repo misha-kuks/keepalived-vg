@@ -1,0 +1,68 @@
+---
+# tasks file for nginx_install
+- name: Update apt cache
+  apt: 
+    update_cache=yes 
+    cache_valid_time=3600
+
+- name: Install nginx
+  apt: 
+    name: nginx
+
+- name: Install package nginx and php7
+  apt: 
+    name:
+    - nginx
+    - php7.4-fpm
+    - php7.4-common
+    - php7.4-mysql
+    - php7.4-gmp
+    - php7.4-curl
+    - php7.4-intl
+    - php7.4-mbstring
+    - php7.4-xmlrpc
+    - php7.4-gd
+    - php7.4-xml
+    - php7.4-cli
+    - php7.4-zip
+    - zip
+    state: present
+    
+
+- name: Start nginx
+  service:
+    name: nginx
+    state: started
+
+- name: Update nginx confs for WordPress + PHP
+  copy: 
+    src="demosite.local" 
+    dest="/etc/nginx/sites-available/demosite.local" 
+    owner=root 
+    group=root
+    mode=0755
+  
+
+- name: Enable site
+  file: 
+    src=/etc/nginx/sites-available/demosite.local 
+    dest=/etc/nginx/sites-enabled/demosite.local 
+    owner=root
+    group=root 
+    state=link
+  notify:
+    - restart nginx
+- name: Create webroot
+  file:
+    state: directory
+    path: /srv/www/
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Check if WordPress directory exists in /srv/www
+  file: 
+    state: directory
+    path: /srv/www/demosite.local
+    owner: www-data
+    group: www-data

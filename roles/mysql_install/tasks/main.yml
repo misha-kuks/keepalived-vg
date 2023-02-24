@@ -1,0 +1,26 @@
+---
+# tasks file for mysql_install
+- name: Preconfig
+  include_tasks: initial.yml
+- name: mariadb configuration
+  become: true
+  block:
+    - name: Install package
+      apt: 
+        name: 
+        - mariadb-server
+        - python3-pymysql
+        state: present
+- name: Create db
+  shell: >
+    mysql -e "CREATE DATABASE wordpress;" &&
+    mysql -e "CREATE USER 'wordpress'@'%' IDENTIFIED BY 'Otus123';" &&
+    mysql -e "GRANT ALL ON wordpress.* TO 'wordpress'@'%';"
+  ignore_errors: true
+- name: Change bind-address
+  lineinfile:
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: "127.0.0.1"
+    line: "bind-address            = 0.0.0.0" 
+    state: present
+  notify: restart mariadb

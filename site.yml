@@ -1,0 +1,11 @@
+- hosts: db
+  become: true
+  roles:
+    - mysql_install
+- hosts: web
+  become: true
+  roles:
+    - keepalived_install
+    - nginx_install 
+    - wordpress
+      
